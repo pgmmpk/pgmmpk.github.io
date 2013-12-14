@@ -2,14 +2,14 @@
 layout: default
 keywords: javascript, jQuery, AngularJS, Angular
 ---
-### Current events
-What is the best user-facing API for working with events emitted by DOM elements? 
+# Current events
+What is the best user-facing API for working with events? 
 The task is to be able to subscribe to an event, and to unsubscribe. The latter is 
 crucial, if often overlooked, requirement. 
 
 Lets start with the begining.
 
-##W3 DOM specs
+###W3 DOM specs
 Official W3 DOM specification suggests this:
 
 {% highlight javascript %}
@@ -18,6 +18,7 @@ function listener(evt) {
 }
 
 element.addEventListener('keypress', listener);
+...
 element.removeEventListener('keypress', listener);
 {% endhighlight %}
 
@@ -40,18 +41,20 @@ function listener(evt) {
 }
 
 $element.on('keypress', listener);
+...
 $element.off('keypress', listener);
 
 {% endhighlight %}
 
-Much better! It is chainable, succint. However you still need a name for the listener to be able to unsubscribe. Alternatively you can use
-somewhat clunky [IMHO] "namespace" mechanism:
+Much better! It is chainable, succint. However you still need a name for the listener
+to be able to unsubscribe. Alternatively you can use somewhat clunky (IMHO) "namespace" mechanism:
 
 {% highlight javascript %}
 
 $element.on('keypress.mine', function(evt) {
 	alert(evt);
 });
+...
 $element.off('keypress.mine');
 
 {% endhighlight %}
@@ -73,12 +76,12 @@ detach();
 
 {% endhighlight %}
 
-This nicely removes redundancy and avoids messing with event names. Also it allows anonymous handlers to be registered and detached. Is it perfect? No! I want chaining
-of `on()` calls (like jQuery).
+This nicely removes redundancy and avoids messing with event names. Also it allows anonymous handlers to be registered
+and detached. Is it perfect? No! I want chaining of `on()` calls (like jQuery).
 
 ### Subscription
 We can improve on Angular's approach by introducing an intermediate `subscription` object. Subscription keeps track of attached listeners and allows
-to detach them, but only all together. Here is how it look: 
+to detach them, but only all together. Here is how it works: 
 
 {% highlight javascript %}
 
@@ -108,4 +111,6 @@ subscription.release(); // releases all attached handlers
 
 {% endhighlight %}
 
-All said, each method has its merits. Personally I would go with the subscription style, just because it "reminds" user 
+All said, each method has its merits. Personally I would go with the subscription style. Its a little more verbose than I'd like
+but it is simple to understand and the very existence of `subscription` object in the API reminds the user (me) to close it
+when it is no longer needed. 

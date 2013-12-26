@@ -3,11 +3,14 @@ layout: default
 keywords: javascript, jQuery, AngularJS, Angular
 ---
 # Current events
-What is the best user-facing API for working with events? 
-The task is to be able to subscribe to an event, and to unsubscribe. The latter is 
-crucial, if often overlooked, requirement. 
+This is not about politics or sports (luckily, and sadly), but about styles of event-dispatching APIs in JavaScript.
 
-Lets start with the begining.
+The variety of styles can make one (me) easily confused. And confusion inexplicably creates an urge for blogging, so here it goes.
+ 
+Event dispatching is straightforward. Managing event subscriptions is not -- this is where all of the aforementioned variety happens (and what is discussed herewithin).
+Idea is that one should be able to subscribe to an event, and to unsubscribe. The latter is crucial, if often overlooked, requirement. 
+
+Lets start with the beginning.
 
 ###W3 DOM specs
 Official W3 DOM specification suggests this:
@@ -25,11 +28,9 @@ element.removeEventListener('keypress', listener);
 Problem? Many:
 
 1. too verbose
-
-2. does not allow chaining
-
-3. you can not inline listener parameter as an anonymous function, because you need a reference
-to it so that you can pass it to the `removeEventListener`.
+2. does not allow call chaining
+3. you can not inline the listener as an anonymous function, because you need a reference
+   to it so that you can pass it later to the `removeEventListener`.
 
 ### jQuery: on() and off()
 jQuery's answer to this is `on`/`off` metaphor:
@@ -64,7 +65,7 @@ name one can cleanly detach from event source.
 
 ### Attach returns detacher (AngularJS)
 
-AngularJS has `on`, but not `off`. This is because call to `on` now returns a *function that will detach listener from the event source*. 
+AngularJS scope events[^*] have `on`, but not `off`. This is because call to `on` now returns a *function that will detach listener from the event source*. 
 
 {% highlight javascript %}
 
@@ -113,4 +114,7 @@ subscription.release(); // releases all attached handlers
 
 All said, each method has its merits. Personally I would go with the subscription style. Its a little more verbose than I'd like
 but it is simple to understand and the very existence of `subscription` object in the API reminds the user (me) to close it
-when it is no longer needed. 
+when it is no longer needed.
+
+[^*]: Do not confuse scope events with with DOM events in AngularJS, latter are handled by jqLite -- Angular lightweight version 
+of jQuery -- and therefore DOM events API is pretty much the same as that of jQuery.
